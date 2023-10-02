@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    # These credentials are alright for local testing purposes
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    # Persist data to a volume between container restarts
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:
+    driver: local
