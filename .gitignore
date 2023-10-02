@@ -3,3 +3,6 @@
 # Python
 .venv
 __pycache__
+
+# SQLite databases
+*.db

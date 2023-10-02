@@ -1,26 +1,18 @@
-import uvicorn
-from typing import Union
-
 from fastapi import FastAPI
+from sqlmodel import SQLModel
+
+from .routes import todo_list
+from .routes import todo
+from .database import engine
 
 app = FastAPI()
 
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+app.include_router(todo_list.router)
+app.include_router(todo.router)
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-
-# Entry point for "poetry run start"
-def start():
-    uvicorn.run("app.main:app", port=3000)
-
-
-# Entry point for "poetry run dev"
-def dev():
-    uvicorn.run("app.main:app", port=3000, reload=True)
+@app.on_event("startup")
+def on_startup():
+    # Create DB tables on startup. Should use some kind of migration system such as
+    # https://alembic.sqlalchemy.org/en/latest/ but for now this shall be enough.
+    SQLModel.metadata.create_all(engine)
