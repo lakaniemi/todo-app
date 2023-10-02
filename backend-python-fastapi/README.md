@@ -6,3 +6,13 @@
   - If using pyenv, remember to install [Python build dependencies](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
 - [Poetry](https://github.com/python-poetry/poetry) package manager (v1.6.1)
   - Install through e.g. `pipx`: `pipx install poetry==1.6.1`
+
+## Development
+
+```bash
+# Install dependencies
+poetry install
+
+# Run server in dev mode
+poetry run dev
+```
