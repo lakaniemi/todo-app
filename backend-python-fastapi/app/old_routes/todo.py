@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
-from ..models import TodoCreate, TodoRead, Todo, TodoList
+from ..api_models import TodoCreate, TodoRead, Todo, TodoList
 from ..database import engine
 
 router = APIRouter(prefix="/todos", tags=["Todo"])
