@@ -65,3 +65,55 @@ async def delete_todo_list(id: int, session: AsyncSession):
 
     await session.delete(db_todo_list)
     await session.commit()
+
+
+async def get_todos(session: AsyncSession):
+    query = await session.execute(select(db_models.Todo))
+    return query.scalars().all()
+
+
+async def get_todo_by_id(id: int, session: AsyncSession):
+    query = await session.execute(select(db_models.Todo).where(db_models.Todo.id == id))
+    return query.scalars().first()
+
+
+async def create_todo(todo: api_models.TodoCreate, session: AsyncSession):
+    db_todo_list = await get_todo_list_by_id(todo.todo_list_id, session)
+
+    if db_todo_list is None:
+        raise NotFoundException(f"List with id '{todo.todo_list_id}' was not found")
+
+    db_todo = db_models.Todo(**todo.dict())
+    session.add(db_todo)
+    await session.commit()
+    await session.refresh(db_todo)
+    return db_todo
+
+
+async def update_todo(
+    id: int, updated_fields: api_models.TodoCreate, session: AsyncSession
+):
+    db_todo = await get_todo_by_id(id, session)
+
+    if db_todo is None:
+        raise NotFoundException(f"Todo with id '{id}' was not found")
+
+    await session.execute(
+        update(db_models.Todo)
+        .where(db_models.Todo.id == id)
+        .values(**updated_fields.dict())
+    )
+
+    await session.commit()
+    await session.refresh(db_todo)
+    return db_todo
+
+
+async def delete_todo(id: int, session: AsyncSession):
+    db_todo = await get_todo_by_id(id, session)
+
+    if db_todo is None:
+        raise NotFoundException(f"Todo with id '{id}' was not found")
+
+    await session.delete(db_todo)
+    await session.commit()

@@ -7,7 +7,7 @@ from typing import List
 
 class TodoBase(BaseModel):
     name: str
-    completed: bool
+    is_completed: bool
     todo_list_id: int
 
 
