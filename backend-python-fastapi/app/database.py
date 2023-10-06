@@ -1,11 +1,10 @@
 from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite+aiosqlite:///{sqlite_file_name}"
-connect_args = {"check_same_thread": False}  # Needed only for SQLite
+from .config import config
 
-engine = create_async_engine(sqlite_url, echo=True, connect_args=connect_args)
+
+engine = create_async_engine(config.db_connection_string, echo=config.echo_sql_queries)
 
 AsyncSessionFactory = async_sessionmaker(bind=engine, autoflush=False, autocommit=False)
 

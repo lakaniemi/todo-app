@@ -19,7 +19,7 @@ class Todo(TodoBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Todo list
@@ -38,4 +38,4 @@ class TodoList(TodoListBase):
     todos: List[Todo]
 
     class Config:
-        orm_mode = True
+        from_attributes = True

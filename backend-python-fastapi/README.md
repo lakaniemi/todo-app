@@ -7,6 +7,10 @@
 - [Poetry](https://github.com/python-poetry/poetry) package manager (v1.6.1)
   - Install through e.g. `pipx`: `pipx install poetry==1.6.1`
 
+## Configuration
+
+See `config.py` for available config variables. If `.env` file is defined, values will be initially read from that, but environment variables will take priority over variables defined in the file.
+
 ## Development
 
 ```bash
