@@ -1,24 +1,6 @@
 from pydantic import BaseModel
 from typing import List
 
-# Todo list
-
-
-class TodoListBase(BaseModel):
-    name: str
-
-
-class TodoListCreate(TodoListBase):
-    pass
-
-
-class TodoList(TodoListBase):
-    id: int
-    # todos: List["Todo"]
-
-    class Config:
-        orm_mode = True
-
 
 # Todo
 
@@ -35,6 +17,25 @@ class TodoCreate(TodoBase):
 
 class Todo(TodoBase):
     id: int
+
+    class Config:
+        orm_mode = True
+
+
+# Todo list
+
+
+class TodoListBase(BaseModel):
+    name: str
+
+
+class TodoListCreate(TodoListBase):
+    pass
+
+
+class TodoList(TodoListBase):
+    id: int
+    todos: List[Todo]
 
     class Config:
         orm_mode = True

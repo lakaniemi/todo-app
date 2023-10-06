@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, update
+from sqlalchemy.orm import contains_eager
+from sqlalchemy import select, update
 
 from . import db_models, api_models
 
@@ -16,15 +17,22 @@ class NotFoundException(Exception):
 
 
 async def get_todo_lists(session: AsyncSession):
-    query = await session.execute(select(db_models.TodoList))
-    return query.scalars().all()
+    query = await session.execute(
+        select(db_models.TodoList)
+        .join(db_models.TodoList.todos, isouter=True)
+        .options(contains_eager(db_models.TodoList.todos))
+    )
+    return query.scalars().unique().all()
 
 
 async def get_todo_list_by_id(id: int, session: AsyncSession):
     query = await session.execute(
-        select(db_models.TodoList).where(db_models.TodoList.id == id)
+        select(db_models.TodoList)
+        .where(db_models.TodoList.id == id)
+        .join(db_models.TodoList.todos, isouter=True)
+        .options(contains_eager(db_models.TodoList.todos))
     )
-    return query.scalars().first()
+    return query.scalars().unique().first()
 
 
 async def create_todo_list(list: api_models.TodoListCreate, session: AsyncSession):

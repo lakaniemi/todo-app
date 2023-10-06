@@ -7,14 +7,6 @@ class Base(DeclarativeBase):
     pass
 
 
-class TodoList(Base):
-    __tablename__ = "todo_list"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    # todos: Mapped[List["Todo"]] = relationship("Todo", cascade="all, delete-orphan")
-
-
 class Todo(Base):
     __tablename__ = "todo"
 
@@ -22,3 +14,11 @@ class Todo(Base):
     todo_list_id: Mapped[int] = mapped_column(ForeignKey("todo_list.id"))
     name: Mapped[str]
     is_completed: Mapped[bool] = mapped_column(default=False)
+
+
+class TodoList(Base):
+    __tablename__ = "todo_list"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    todos: Mapped[List[Todo]] = relationship(cascade="all, delete-orphan")
