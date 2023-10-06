@@ -17,22 +17,15 @@ class NotFoundException(Exception):
 
 
 async def get_todo_lists(session: AsyncSession):
-    query = await session.execute(
-        select(db_models.TodoList)
-        .join(db_models.TodoList.todos, isouter=True)
-        .options(contains_eager(db_models.TodoList.todos))
-    )
-    return query.scalars().unique().all()
+    query = await session.execute(select(db_models.TodoList))
+    return query.scalars().all()
 
 
 async def get_todo_list_by_id(id: int, session: AsyncSession):
     query = await session.execute(
-        select(db_models.TodoList)
-        .where(db_models.TodoList.id == id)
-        .join(db_models.TodoList.todos, isouter=True)
-        .options(contains_eager(db_models.TodoList.todos))
+        select(db_models.TodoList).where(db_models.TodoList.id == id)
     )
-    return query.scalars().unique().first()
+    return query.scalars().first()
 
 
 async def create_todo_list(list: api_models.TodoListCreate, session: AsyncSession):

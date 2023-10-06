@@ -21,4 +21,8 @@ class TodoList(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
-    todos: Mapped[List[Todo]] = relationship(cascade="all, delete-orphan")
+    todos: Mapped[List[Todo]] = relationship(
+        cascade="all, delete-orphan",
+        # https://docs.sqlalchemy.org/en/20/orm/queryguide/relationships.html#relationship-loading-techniques
+        lazy="selectin",
+    )
