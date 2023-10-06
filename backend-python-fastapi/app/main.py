@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 
 from .routes import todo_list_router, todo_router
-from .database import engine
 
-app = FastAPI()
+app = FastAPI(title="TODO App Backend", version="1.0.0")
 
 app.include_router(todo_list_router)
 app.include_router(todo_router)

@@ -18,7 +18,6 @@ todo_router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-
 # Todo lists
 
 

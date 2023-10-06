@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 
 
@@ -6,8 +6,8 @@ from typing import List
 
 
 class TodoBase(BaseModel):
-    name: str
-    is_completed: bool
+    name: str = Field(examples=["Buy milk"])
+    is_completed: bool = Field(default=False)
     todo_list_id: int
 
 
@@ -26,7 +26,7 @@ class Todo(TodoBase):
 
 
 class TodoListBase(BaseModel):
-    name: str
+    name: str = Field(examples=["Groceries"])
 
 
 class TodoListCreate(TodoListBase):

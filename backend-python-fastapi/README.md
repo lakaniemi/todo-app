@@ -14,6 +14,8 @@
 poetry install
 
 # Run server in dev mode. Also remember to run migrations before this (see below!)
+# By default, server will run in localhost:3000. OpenAPI docs available at
+# localhost:3000/docs or localhost:3000/redoc
 poetry run dev
 ```
 
