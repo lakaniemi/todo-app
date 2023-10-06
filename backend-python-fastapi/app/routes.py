@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .database import get_session
 from . import db_models, api_models, db_queries
+from .db_queries import NotFoundException
 
 router = APIRouter(
     prefix="/todo-lists",
@@ -40,19 +41,15 @@ async def update_todo_list(
     updated_fields: api_models.TodoListCreate,
     session: AsyncSession = Depends(get_session),
 ):
-    updated_list = await db_queries.update_todo_list(list_id, updated_fields, session)
-    if updated_list is None:
-        raise HTTPException(
-            status_code=404, detail=f"List with id '{list_id}' was not found"
-        )
-    return updated_list
+    try:
+        return await db_queries.update_todo_list(list_id, updated_fields, session)
+    except NotFoundException as e:
+        raise HTTPException(status_code=404, detail=e.message)
 
 
 @router.delete("/", status_code=204)
 async def delete_todo_list(list_id: int, session: AsyncSession = Depends(get_session)):
-    todo_list = await db_queries.get_todo_list_by_id(list_id, session)
-    if todo_list is None:
-        raise HTTPException(
-            status_code=404, detail=f"List with id '{list_id}' was not found"
-        )
-    await db_queries.delete_todo_list(todo_list, session)
+    try:
+        return await db_queries.delete_todo_list(list_id, session)
+    except NotFoundException as e:
+        raise HTTPException(status_code=404, detail=e.message)
