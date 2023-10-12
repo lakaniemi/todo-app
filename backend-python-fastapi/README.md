@@ -40,3 +40,13 @@ alembic revision -m "migration name"
 # For automatic generation based on model changes, use
 DB_URL=sqlite:///database.db alembic revision --autogenerate -m "migration name"
 ```
+
+## TODO list
+
+- Tests
+- Validations
+- Postgres setup
+- Dockerize
+- Github Actions
+- Pylint
+- Type checking
