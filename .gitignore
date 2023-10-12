@@ -7,3 +7,13 @@ __pycache__
 
 # SQLite databases
 *.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
