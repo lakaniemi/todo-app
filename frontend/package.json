@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/uuid": "^9.0.5",
+    "purify-ts": "^2.0.1",
+    "purify-ts-extra-codec": "^0.6.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "uuid": "^9.0.1",
+    "zustand": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.6",
