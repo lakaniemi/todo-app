@@ -1,7 +1,11 @@
+import { TodoList } from "./components/TodoList";
+
 export const App = () => {
   return (
-    <div>
-      <h1>Todo App</h1>
+    <div className="p-2">
+      <h1 className="text-4xl mb-4">Todo App</h1>
+
+      <TodoList name="Testilista" />
     </div>
   );
 };

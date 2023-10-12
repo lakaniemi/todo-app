@@ -36,5 +36,9 @@ module.exports = {
         unnamedComponents: "arrow-function",
       },
     ],
+    // Prefer types over interfaces
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+    // Prop-types not really relevant with TS
+    "react/prop-types": "off",
   },
 };
