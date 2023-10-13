@@ -40,5 +40,18 @@ module.exports = {
     "@typescript-eslint/consistent-type-definitions": ["error", "type"],
     // Prop-types not really relevant with TS
     "react/prop-types": "off",
+    // Group imports for more clarity
+    "import/order": [
+      "error",
+      {
+        groups: [
+          ["builtin", "type", "external"],
+          ["internal", "parent", "sibling", "index"],
+          "object",
+        ],
+        alphabetize: { order: "asc", caseInsensitive: true },
+        "newlines-between": "always",
+      },
+    ],
   },
 };

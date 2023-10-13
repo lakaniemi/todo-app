@@ -1,5 +1,6 @@
 import { Codec, Either, EitherAsync, Left, array } from "purify-ts";
-import { TodoListCodec } from "./codecs";
+
+import { TodoList, TodoListCodec } from "./codecs";
 
 export enum APIErrorType {
   Unexpected = "unexpected",
@@ -29,15 +30,24 @@ const jsonOrText = async (response: Response): Promise<unknown> => {
   }
 };
 
+type APIRequestOptions = {
+  method?: string;
+  body?: Record<string, unknown>;
+};
+
 export const apiRequest = async <T>(
   path: string,
   codec: Codec<T>,
-  options?: RequestInit,
+  options: APIRequestOptions = {},
 ): Promise<Either<APIError, T>> => {
   try {
     const url = new URL(path, import.meta.env.VITE_BACKEND_URL || "");
-
-    const response = await fetch(url, options);
+    const { method, body } = options;
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
 
     if (!response.ok) {
       const error = await jsonOrText(response);
@@ -47,8 +57,8 @@ export const apiRequest = async <T>(
       } satisfies APIError);
     }
 
-    const body = await jsonOrText(response);
-    return codec.decode(body).mapLeft((codecError) => ({
+    const responseBody = await jsonOrText(response);
+    return codec.decode(responseBody).mapLeft((codecError) => ({
       type: APIErrorType.Validation,
       context: codecError,
     }));
@@ -63,4 +73,11 @@ export const apiRequest = async <T>(
 export const fetchTodoListsEA = () =>
   EitherAsync.fromPromise(() =>
     apiRequest("/todo-lists", array(TodoListCodec)),
+  );
+
+export type CreateTodoListBody = Pick<TodoList, "name">;
+
+export const createTodoListEA = (body: CreateTodoListBody) =>
+  EitherAsync.fromPromise(() =>
+    apiRequest("/todo-lists", TodoListCodec, { method: "POST", body }),
   );

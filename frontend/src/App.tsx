@@ -1,21 +1,24 @@
 import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useShallow } from "zustand/react/shallow";
 
+import { Button } from "./components/primitive/Button";
 import { TodoList } from "./components/TodoList";
 import { useAppState } from "./state";
 
 export const App = () => {
-  const todoLists = useAppState((state) => state.todoListsById);
+  const todoLists = useAppState(
+    useShallow((state) => Object.values(state.todoListsById)),
+  );
   const errors = useAppState((state) => state.errors);
   const fetchTodoLists = useAppState((state) => state.fetchTodoLists);
+  const createTodoList = useAppState((state) => state.createTodoList);
   const clearErrors = useAppState((state) => state.clearErrors);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchTodoLists();
   }, [fetchTodoLists]);
-
-  console.log(Object.values(todoLists));
 
   return (
     <div className="p-2">
@@ -37,9 +40,25 @@ export const App = () => {
           </button>
         </div>
       )}
-      <h1 className="text-4xl mb-4">Todo App</h1>
 
-      <TodoList name="Testilista" />
+      <header className="mb-8 flex align gap-4">
+        <h1 className="text-4xl">Todo App</h1>
+        <div>
+          <Button
+            text="New todo list"
+            onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              createTodoList({ name: uuidv4() });
+            }}
+          />
+        </div>
+      </header>
+
+      <main>
+        {todoLists.map((todoList) => (
+          <TodoList key={`list-${todoList.id}`} list={todoList} />
+        ))}
+      </main>
     </div>
   );
 };

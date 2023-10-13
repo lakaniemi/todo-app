@@ -1,6 +1,12 @@
 import { create } from "zustand";
+
+import {
+  APIError,
+  CreateTodoListBody,
+  createTodoListEA,
+  fetchTodoListsEA,
+} from "./api";
 import { TodoList } from "./codecs";
-import { APIError, fetchTodoListsEA } from "./api";
 
 type AppState = {
   // Instead of TodoList[] we want to store every list in key-value object to
@@ -14,6 +20,7 @@ type AppState = {
 type Actions = {
   clearErrors: () => void;
   fetchTodoLists: () => Promise<void>;
+  createTodoList: (body: CreateTodoListBody) => Promise<void>;
 };
 
 export const useAppState = create<AppState & Actions>((set) => ({
@@ -38,5 +45,17 @@ export const useAppState = create<AppState & Actions>((set) => ({
         });
       })
       .run();
+  },
+
+  createTodoList: async (body) => {
+    await createTodoListEA(body)
+      .ifLeft((error) => {
+        set((state) => ({ errors: [...state.errors, error] }));
+      })
+      .ifRight((todoList) => {
+        set((state) => ({
+          todoListsById: { ...state.todoListsById, [todoList.id]: todoList },
+        }));
+      });
   },
 }));
