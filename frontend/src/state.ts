@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-dynamic-delete */
 import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
 
 import {
   APIError,
   CreateTodoListBody,
   createTodoListEA,
+  deleteTodoListEA,
   fetchTodoListsEA,
+  updateTodoListEA,
 } from "./api";
 import { TodoList } from "./codecs";
 
@@ -15,47 +19,84 @@ type AppState = {
 
   // Just dump them here for now
   errors: APIError[];
-};
 
-type Actions = {
   clearErrors: () => void;
   fetchTodoLists: () => Promise<void>;
   createTodoList: (body: CreateTodoListBody) => Promise<void>;
+  deleteTodoList: (id: TodoList["id"]) => Promise<void>;
+  updateTodoList: (
+    id: TodoList["id"],
+    body: CreateTodoListBody,
+  ) => Promise<void>;
 };
 
-export const useAppState = create<AppState & Actions>((set) => ({
-  todoListsById: {},
-  errors: [],
+export const useAppState = create(
+  immer<AppState>((set) => ({
+    todoListsById: {},
+    errors: [],
 
-  clearErrors: () => {
-    set({ errors: [] });
-  },
+    clearErrors: () => {
+      set({ errors: [] });
+    },
 
-  fetchTodoLists: async () => {
-    await fetchTodoListsEA()
-      .ifLeft((error) => {
-        set((state) => ({ errors: [...state.errors, error] }));
-      })
-      .ifRight((todoLists) => {
-        set({
-          todoListsById: todoLists.reduce(
-            (result, todoList) => ({ ...result, [todoList.id]: todoList }),
-            {},
-          ),
+    fetchTodoLists: async () => {
+      await fetchTodoListsEA()
+        .ifLeft((error) => {
+          set((state) => {
+            state.errors.push(error);
+          });
+        })
+        .ifRight((todoLists) => {
+          set({
+            todoListsById: todoLists.reduce(
+              (result, todoList) => ({ ...result, [todoList.id]: todoList }),
+              {},
+            ),
+          });
+        })
+        .run();
+    },
+
+    createTodoList: async (body) => {
+      await createTodoListEA(body)
+        .ifLeft((error) => {
+          set((state) => {
+            state.errors.push(error);
+          });
+        })
+        .ifRight((todoList) => {
+          set((state) => {
+            state.todoListsById[todoList.id] = todoList;
+          });
         });
-      })
-      .run();
-  },
+    },
 
-  createTodoList: async (body) => {
-    await createTodoListEA(body)
-      .ifLeft((error) => {
-        set((state) => ({ errors: [...state.errors, error] }));
-      })
-      .ifRight((todoList) => {
-        set((state) => ({
-          todoListsById: { ...state.todoListsById, [todoList.id]: todoList },
-        }));
-      });
-  },
-}));
+    deleteTodoList: async (id: TodoList["id"]) => {
+      await deleteTodoListEA(id)
+        .ifLeft((error) => {
+          set((state) => {
+            state.errors.push(error);
+          });
+        })
+        .ifRight(() => {
+          set((state) => {
+            delete state.todoListsById[id];
+          });
+        });
+    },
+
+    updateTodoList: async (id: TodoList["id"], body: CreateTodoListBody) => {
+      await updateTodoListEA(id, body)
+        .ifLeft((error) => {
+          set((state) => {
+            state.errors.push(error);
+          });
+        })
+        .ifRight((todoList) => {
+          set((state) => {
+            state.todoListsById[todoList.id] = todoList;
+          });
+        });
+    },
+  })),
+);

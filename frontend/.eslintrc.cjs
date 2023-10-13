@@ -53,5 +53,10 @@ module.exports = {
         "newlines-between": "always",
       },
     ],
+    // Add exception for immer, allows reassign when using on "state" variable
+    "no-param-reassign": [
+      "error",
+      { props: true, ignorePropertyModificationsFor: ["state"] },
+    ],
   },
 };

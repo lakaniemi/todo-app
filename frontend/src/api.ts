@@ -58,6 +58,7 @@ export const apiRequest = async <T>(
     }
 
     const responseBody = await jsonOrText(response);
+
     return codec.decode(responseBody).mapLeft((codecError) => ({
       type: APIErrorType.Validation,
       context: codecError,
@@ -80,4 +81,18 @@ export type CreateTodoListBody = Pick<TodoList, "name">;
 export const createTodoListEA = (body: CreateTodoListBody) =>
   EitherAsync.fromPromise(() =>
     apiRequest("/todo-lists", TodoListCodec, { method: "POST", body }),
+  );
+
+export const updateTodoListEA = (
+  id: TodoList["id"],
+  body: CreateTodoListBody,
+) =>
+  EitherAsync.fromPromise(() =>
+    apiRequest(`/todo-lists/${id}`, TodoListCodec, { method: "PUT", body }),
+  );
+
+// TODO: fix codec -> need to allow 204 No Content response, not really responding with TodoList
+export const deleteTodoListEA = (id: TodoList["id"]) =>
+  EitherAsync.fromPromise(() =>
+    apiRequest(`/todo-lists/${id}`, TodoListCodec, { method: "DELETE" }),
   );
