@@ -1,5 +1,20 @@
-import { GetType, array, boolean, number, string } from "purify-ts";
+import {
+  Codec,
+  GetType,
+  Right,
+  array,
+  boolean,
+  number,
+  string,
+} from "purify-ts";
 import { Interface } from "purify-ts-extra-codec";
+
+// Codec that accepts everything and return undefined. Used for API requests that
+// we don't expect a body to return.
+export const ReturnUndefinedCodec = Codec.custom<undefined>({
+  decode: () => Right(undefined),
+  encode: () => Right(undefined),
+});
 
 export const TodoCodec = Interface({
   id: number,

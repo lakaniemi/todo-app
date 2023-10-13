@@ -1,6 +1,6 @@
 import { Codec, Either, EitherAsync, Left, array } from "purify-ts";
 
-import { TodoList, TodoListCodec } from "./codecs";
+import { ReturnUndefinedCodec, TodoList, TodoListCodec } from "./codecs";
 
 export enum APIErrorType {
   Unexpected = "unexpected",
@@ -37,7 +37,7 @@ type APIRequestOptions = {
 
 export const apiRequest = async <T>(
   path: string,
-  codec: Codec<T>,
+  bodyCodec: Codec<T>,
   options: APIRequestOptions = {},
 ): Promise<Either<APIError, T>> => {
   try {
@@ -59,7 +59,7 @@ export const apiRequest = async <T>(
 
     const responseBody = await jsonOrText(response);
 
-    return codec.decode(responseBody).mapLeft((codecError) => ({
+    return bodyCodec.decode(responseBody).mapLeft((codecError) => ({
       type: APIErrorType.Validation,
       context: codecError,
     }));
@@ -91,8 +91,7 @@ export const updateTodoListEA = (
     apiRequest(`/todo-lists/${id}`, TodoListCodec, { method: "PUT", body }),
   );
 
-// TODO: fix codec -> need to allow 204 No Content response, not really responding with TodoList
 export const deleteTodoListEA = (id: TodoList["id"]) =>
   EitherAsync.fromPromise(() =>
-    apiRequest(`/todo-lists/${id}`, TodoListCodec, { method: "DELETE" }),
+    apiRequest(`/todo-lists/${id}`, ReturnUndefinedCodec, { method: "DELETE" }),
   );
