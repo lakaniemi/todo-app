@@ -1,6 +1,12 @@
 import { Codec, Either, EitherAsync, Left, array } from "purify-ts";
 
-import { ReturnUndefinedCodec, TodoList, TodoListCodec } from "./codecs";
+import {
+  ReturnUndefinedCodec,
+  Todo,
+  TodoCodec,
+  TodoList,
+  TodoListCodec,
+} from "./codecs";
 
 export enum APIErrorType {
   Unexpected = "unexpected",
@@ -94,4 +100,21 @@ export const updateTodoListEA = (
 export const deleteTodoListEA = (id: TodoList["id"]) =>
   EitherAsync.fromPromise(() =>
     apiRequest(`/todo-lists/${id}`, ReturnUndefinedCodec, { method: "DELETE" }),
+  );
+
+export type CreateTodoBody = Omit<Todo, "id">;
+
+export const createTodoEA = (body: CreateTodoBody) =>
+  EitherAsync.fromPromise(() =>
+    apiRequest("/todos", TodoCodec, { method: "POST", body }),
+  );
+
+export const updateTodoEA = (id: Todo["id"], body: CreateTodoBody) =>
+  EitherAsync.fromPromise(() =>
+    apiRequest(`/todos/${id}`, TodoCodec, { method: "PUT", body }),
+  );
+
+export const deleteTodoEA = (id: Todo["id"]) =>
+  EitherAsync.fromPromise(() =>
+    apiRequest(`/todos/${id}`, ReturnUndefinedCodec, { method: "DELETE" }),
   );

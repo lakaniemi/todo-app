@@ -4,13 +4,17 @@ import { immer } from "zustand/middleware/immer";
 
 import {
   APIError,
+  CreateTodoBody,
   CreateTodoListBody,
+  createTodoEA,
   createTodoListEA,
+  deleteTodoEA,
   deleteTodoListEA,
   fetchTodoListsEA,
+  updateTodoEA,
   updateTodoListEA,
 } from "./api";
-import { TodoList } from "./codecs";
+import { Todo, TodoList } from "./codecs";
 
 type AppState = {
   // Instead of TodoList[] we want to store every list in key-value object to
@@ -21,6 +25,7 @@ type AppState = {
   errors: APIError[];
 
   clearErrors: () => void;
+
   fetchTodoLists: () => Promise<void>;
   createTodoList: (body: CreateTodoListBody) => Promise<void>;
   deleteTodoList: (id: TodoList["id"]) => Promise<void>;
@@ -28,6 +33,10 @@ type AppState = {
     id: TodoList["id"],
     body: CreateTodoListBody,
   ) => Promise<void>;
+
+  createTodo: (body: CreateTodoBody) => Promise<void>;
+  updateTodo: (id: Todo["id"], body: CreateTodoBody) => Promise<void>;
+  deleteTodo: (todo: Todo) => Promise<void>;
 };
 
 export const useAppState = create(
@@ -95,6 +104,60 @@ export const useAppState = create(
         .ifRight((todoList) => {
           set((state) => {
             state.todoListsById[todoList.id] = todoList;
+          });
+        });
+    },
+
+    createTodo: async (body: CreateTodoBody) => {
+      await createTodoEA(body)
+        .ifLeft((error) => {
+          set((state) => {
+            state.errors.push(error);
+          });
+        })
+        .ifRight((todo) => {
+          set((state) => {
+            state.todoListsById[todo.todo_list_id].todos.push(todo);
+          });
+        });
+    },
+
+    updateTodo: async (id: Todo["id"], body: CreateTodoBody) => {
+      await updateTodoEA(id, body)
+        .ifLeft((error) => {
+          set((state) => {
+            state.errors.push(error);
+          });
+        })
+        .ifRight((todo) => {
+          set((state) => {
+            const todosArray = state.todoListsById[todo.todo_list_id].todos;
+            const todoIndex = todosArray.findIndex(
+              (todoToUpdate) => todoToUpdate.id === id,
+            );
+            if (todoIndex !== -1) {
+              todosArray[todoIndex] = todo;
+            }
+          });
+        });
+    },
+
+    deleteTodo: async (todo: Todo) => {
+      await deleteTodoEA(todo.id)
+        .ifLeft((error) => {
+          set((state) => {
+            state.errors.push(error);
+          });
+        })
+        .ifRight(() => {
+          set((state) => {
+            const todosArray = state.todoListsById[todo.todo_list_id].todos;
+            const todoIndex = todosArray.findIndex(
+              (todoToDelete) => todoToDelete.id === todo.id,
+            );
+            if (todoIndex !== -1) {
+              todosArray.splice(todoIndex, 1);
+            }
           });
         });
     },

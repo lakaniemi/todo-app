@@ -12,6 +12,7 @@ type Props = {
 export const TodoList: React.FC<Props> = ({ list }) => {
   const deleteTodoList = useAppState((state) => state.deleteTodoList);
   const updateTodoList = useAppState((state) => state.updateTodoList);
+  const createTodo = useAppState((state) => state.createTodo);
 
   const { name, todos } = list;
 
@@ -33,15 +34,21 @@ export const TodoList: React.FC<Props> = ({ list }) => {
             updateTodoList(list.id, { name: uuidv4() });
           }}
         />
+        <Button
+          text="Add TODO"
+          onClick={() => {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            createTodo({
+              name: uuidv4(),
+              is_completed: false,
+              todo_list_id: list.id,
+            });
+          }}
+        />
       </div>
       <ul>
         {todos.map((todo) => (
-          <Todo
-            key={`todo-${todo.id}`}
-            name={todo.name}
-            isCompleted={todo.is_completed}
-            isEditing={false}
-          />
+          <Todo key={`todo-${todo.id}`} todo={todo} />
         ))}
       </ul>
     </div>
