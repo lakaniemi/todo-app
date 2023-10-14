@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useShallow } from "zustand/react/shallow";
 
-import { Button } from "./components/primitive/Button";
+import { Button } from "./components/elements/Button";
 import { TodoList } from "./components/TodoList";
 import { useAppState } from "./state";
 
