@@ -70,7 +70,7 @@ export const ContextMenu: React.FC<Props> = ({
           role="menu"
           id={`menu-${menuId}`}
           aria-labelledby={`menubutton-${menuId}`}
-          className={`absolute z-10 w-max bg-gray-400 top-full flex flex-col ${menuDirectionStyle}`}
+          className={`absolute z-10 w-max bg-gray-400 shadow-xl top-full flex flex-col ${menuDirectionStyle}`}
         >
           {items.map((item) => (
             <li role="presentation">

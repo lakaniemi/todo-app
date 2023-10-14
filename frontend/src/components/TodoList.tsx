@@ -2,11 +2,9 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "./elements/Button";
-import { TextInput } from "./elements/TextInput";
 import { Todo } from "./Todo";
+import { TodoInput } from "./TodoInput";
 import AddIcon from "../assets/icons/add.svg";
-import CheckIcon from "../assets/icons/check.svg";
-import CrossIcon from "../assets/icons/cross.svg";
 import DeleteIcon from "../assets/icons/delete.svg";
 import EditIcon from "../assets/icons/edit.svg";
 import { TodoList as TodoListType } from "../codecs";
@@ -22,7 +20,6 @@ export const TodoList: React.FC<Props> = ({ list }) => {
   const createTodo = useAppState((state) => state.createTodo);
 
   const [isTodoInputOpen, setIsTodoInputOpen] = useState(false);
-  const [newTodoDescription, setNewTodoDescription] = useState("");
 
   const { name, todos } = list;
 
@@ -65,36 +62,20 @@ export const TodoList: React.FC<Props> = ({ list }) => {
           }}
         />
       ) : (
-        <form
-          className="flex gap-2 flex-wrap"
-          onSubmit={() => {
+        <TodoInput
+          onSubmit={(newTodoName) => {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             createTodo({
-              name: newTodoDescription,
-              is_completed: false,
+              name: newTodoName,
               todo_list_id: list.id,
+              is_completed: false,
             });
             setIsTodoInputOpen(false);
-            setNewTodoDescription("");
           }}
-          onReset={() => {
+          onCancel={() => {
             setIsTodoInputOpen(false);
-            setNewTodoDescription("");
           }}
-        >
-          <TextInput
-            autoFocus
-            label="TODO item description"
-            className="flex-grow min-w-[16rem]"
-            onChange={(e) => {
-              setNewTodoDescription(e.target.value);
-            }}
-          />
-          <div className="flex gap-1">
-            <Button text="Add" variant="green" icon={CheckIcon} type="submit" />
-            <Button text="Cancel" variant="red" icon={CrossIcon} type="reset" />
-          </div>
-        </form>
+        />
       )}
     </div>
   );
