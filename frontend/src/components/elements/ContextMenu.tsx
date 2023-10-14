@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import EllipsisIcon from "../../assets/icons/ellipsis-vertical.svg";
 
@@ -73,7 +74,12 @@ export const ContextMenu: React.FC<Props> = ({
           className={`absolute z-10 w-max bg-gray-400 shadow-xl top-full flex flex-col ${menuDirectionStyle}`}
         >
           {items.map((item) => (
-            <li role="presentation">
+            <li
+              role="presentation"
+              // using UUID as key is not optimal, but we don't have unique identifier
+              // for these items.
+              key={`action-${uuidv4()}`}
+            >
               <button
                 role="menuitem"
                 type="button"
