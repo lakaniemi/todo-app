@@ -33,7 +33,7 @@ export const Todo: React.FC<Props> = ({ todo }) => {
               },
             },
             {
-              title: "Edit TODO",
+              title: "Rename TODO",
               icon: EditIcon,
               onClick: () => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises

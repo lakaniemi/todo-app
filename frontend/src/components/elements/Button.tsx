@@ -11,22 +11,32 @@ type Props = {
   iconOnly?: boolean;
   variant?: keyof typeof variants;
   icon?: string;
+  className?: string;
 } & React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
 >;
 
 export const Button: React.FC<Props> = (props) => {
-  const { text, icon, iconOnly, variant = "default" } = props;
+  const {
+    text,
+    icon,
+    iconOnly,
+    variant = "default",
+    type,
+    className,
+    ...rest
+  } = props;
 
   return (
     <button
-      className={`${variants[variant]} rounded-md ${
+      className={`${variants[variant]} rounded-md min-w-max ${
         iconOnly ? "p-1" : "px-2 py-1"
-      }`}
-      type="button"
+      } ${className}`}
+      // eslint-disable-next-line react/button-has-type
+      type={type ?? "button"}
       // eslint-disable-next-line react/jsx-props-no-spreading
-      {...props}
+      {...rest}
     >
       <div className="flex items-center gap-2">
         {icon && (
