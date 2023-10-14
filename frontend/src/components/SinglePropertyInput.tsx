@@ -9,13 +9,15 @@ import CrossIcon from "../assets/icons/cross.svg";
 type Props = {
   onSubmit: (value: string) => void;
   onCancel: () => void;
-  initialValue?: string;
+  label: string;
   className?: string;
+  initialValue?: string;
 };
 
-export const TodoInput: React.FC<Props> = ({
+export const SinglePropertyInput: React.FC<Props> = ({
   onSubmit,
   onCancel,
+  label,
   className,
   initialValue = "",
 }) => {
@@ -33,7 +35,7 @@ export const TodoInput: React.FC<Props> = ({
     >
       <TextInput
         autoFocus
-        label="TODO item description"
+        label={label}
         className="flex-grow min-w-[16rem]"
         value={value}
         onChange={(e) => {

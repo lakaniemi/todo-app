@@ -63,7 +63,7 @@ export const ContextMenu: React.FC<Props> = ({
           setIsMenuOpen((prevState) => !prevState);
         }}
       >
-        <img src={EllipsisIcon} alt="" />
+        <img src={EllipsisIcon} className="h-full" alt="" />
       </button>
       {isMenuOpen && (
         <ul

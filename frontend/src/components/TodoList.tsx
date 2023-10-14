@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "./elements/Button";
+import { ContextMenu } from "./elements/ContextMenu";
+import { SinglePropertyInput } from "./SinglePropertyInput";
 import { Todo } from "./Todo";
-import { TodoInput } from "./TodoInput";
 import AddIcon from "../assets/icons/add.svg";
 import DeleteIcon from "../assets/icons/delete.svg";
 import EditIcon from "../assets/icons/edit.svg";
@@ -19,50 +19,69 @@ export const TodoList: React.FC<Props> = ({ list }) => {
   const updateTodoList = useAppState((state) => state.updateTodoList);
   const createTodo = useAppState((state) => state.createTodo);
 
-  const [isTodoInputOpen, setIsTodoInputOpen] = useState(false);
+  const [isNewTodoInputOpen, setIsNewTodoInputOpen] = useState(false);
+  const [isRenameListInputOpen, setIsRenameListInputOpen] = useState(false);
 
   const { name, todos } = list;
 
   return (
-    <div className="bg-slate-100 rounded-md p-2 my-2">
-      <div className="mb-4 flex gap-4 flex-row flex-wrap">
-        <h2 className="text-2xl">{name}</h2>
-        <div className="flex gap-2">
-          <Button
-            icon={EditIcon}
-            text="Rename list"
-            onClick={() => {
+    <div className="bg-slate-100 rounded-md p-2 mb-4">
+      <div className="mb-4 flex gap-8 items-center justify-between">
+        {!isRenameListInputOpen ? (
+          <h2 className="text-2xl">{name}</h2>
+        ) : (
+          <SinglePropertyInput
+            label="New name for TODO list"
+            className="flex-grow"
+            initialValue={list.name}
+            onSubmit={(newTodoListName) => {
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              updateTodoList(list.id, { name: uuidv4() });
+              updateTodoList(list.id, { name: newTodoListName });
+              setIsRenameListInputOpen(false);
+            }}
+            onCancel={() => {
+              setIsRenameListInputOpen(false);
             }}
           />
-          <Button
-            icon={DeleteIcon}
-            variant="red"
-            text="Delete list"
-            onClick={() => {
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              deleteTodoList(list.id);
-            }}
-          />
-        </div>
+        )}
+        <ContextMenu
+          description={`Actions for todo list "${name}"`}
+          items={[
+            {
+              title: "Rename list",
+              icon: EditIcon,
+              onClick: () => {
+                setIsRenameListInputOpen(true);
+              },
+            },
+            {
+              title: "Delete list",
+              icon: DeleteIcon,
+              onClick: () => {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                deleteTodoList(list.id);
+              },
+            },
+          ]}
+        />
       </div>
       <ul>
         {todos.map((todo) => (
           <Todo key={`todo-${todo.id}`} todo={todo} />
         ))}
       </ul>
-      {!isTodoInputOpen ? (
+      {!isNewTodoInputOpen ? (
         <Button
           icon={AddIcon}
           variant="naked"
           text="Add TODO"
           onClick={() => {
-            setIsTodoInputOpen(true);
+            setIsNewTodoInputOpen(true);
           }}
         />
       ) : (
-        <TodoInput
+        <SinglePropertyInput
+          label="Description of new TODO item"
           onSubmit={(newTodoName) => {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             createTodo({
@@ -70,10 +89,10 @@ export const TodoList: React.FC<Props> = ({ list }) => {
               todo_list_id: list.id,
               is_completed: false,
             });
-            setIsTodoInputOpen(false);
+            setIsNewTodoInputOpen(false);
           }}
           onCancel={() => {
-            setIsTodoInputOpen(false);
+            setIsNewTodoInputOpen(false);
           }}
         />
       )}

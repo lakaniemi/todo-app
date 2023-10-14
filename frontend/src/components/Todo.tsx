@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { ContextMenu } from "./elements/ContextMenu";
-import { TodoInput } from "./TodoInput";
+import { SinglePropertyInput } from "./SinglePropertyInput";
 import DeleteIcon from "../assets/icons/delete.svg";
 import EditIcon from "../assets/icons/edit.svg";
 import { Todo as TodoType } from "../codecs";
@@ -63,7 +63,8 @@ export const Todo: React.FC<Props> = ({ todo }) => {
           />
         </>
       ) : (
-        <TodoInput
+        <SinglePropertyInput
+          label="New description for the TODO"
           className="flex-grow"
           initialValue={name}
           onSubmit={(newName) => {
