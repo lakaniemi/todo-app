@@ -1,3 +1,5 @@
+import classNames from "classnames";
+
 const variants = {
   naked: "hover:bg-gray-200",
   default: "bg-blue-400 hover:bg-blue-300",
@@ -30,9 +32,14 @@ export const Button: React.FC<Props> = (props) => {
 
   return (
     <button
-      className={`${variants[variant]} rounded-md min-w-max ${
-        iconOnly ? "p-1" : "px-2 py-1"
-      } ${className}`}
+      className={classNames(
+        `${variants[variant]} rounded-md min-w-max`,
+        {
+          "p-1": iconOnly,
+          "px-2 py-1": !iconOnly,
+        },
+        className,
+      )}
       // eslint-disable-next-line react/button-has-type
       type={type ?? "button"}
       // eslint-disable-next-line react/jsx-props-no-spreading

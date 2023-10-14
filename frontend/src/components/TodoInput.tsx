@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { useState } from "react";
 
 import { Button } from "./elements/Button";
@@ -9,18 +10,20 @@ type Props = {
   onSubmit: (value: string) => void;
   onCancel: () => void;
   initialValue?: string;
+  className?: string;
 };
 
 export const TodoInput: React.FC<Props> = ({
   onSubmit,
   onCancel,
+  className,
   initialValue = "",
 }) => {
   const [value, setValue] = useState(initialValue);
 
   return (
     <form
-      className="flex gap-2 flex-wrap"
+      className={classNames("flex gap-2 flex-wrap", className)}
       onSubmit={() => {
         onSubmit(value);
       }}
@@ -32,12 +35,18 @@ export const TodoInput: React.FC<Props> = ({
         autoFocus
         label="TODO item description"
         className="flex-grow min-w-[16rem]"
+        value={value}
         onChange={(e) => {
           setValue(e.target.value);
         }}
       />
       <div className="flex gap-1">
-        <Button text="Add" variant="green" icon={CheckIcon} type="submit" />
+        <Button
+          text={initialValue ? "Update" : "Add"}
+          variant="green"
+          icon={CheckIcon}
+          type="submit"
+        />
         <Button text="Cancel" variant="red" icon={CrossIcon} type="reset" />
       </div>
     </form>

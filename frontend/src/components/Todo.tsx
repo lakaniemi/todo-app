@@ -1,6 +1,7 @@
-import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
 
 import { ContextMenu } from "./elements/ContextMenu";
+import { TodoInput } from "./TodoInput";
 import DeleteIcon from "../assets/icons/delete.svg";
 import EditIcon from "../assets/icons/edit.svg";
 import { Todo as TodoType } from "../codecs";
@@ -16,6 +17,8 @@ export const Todo: React.FC<Props> = ({ todo }) => {
 
   const updateTodo = useAppState((state) => state.updateTodo);
   const deleteTodo = useAppState((state) => state.deleteTodo);
+
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <li className="bg-slate-300 my-2 rounded-md flex gap-2 items-center p-2">
@@ -36,31 +39,47 @@ export const Todo: React.FC<Props> = ({ todo }) => {
               title: "Rename TODO",
               icon: EditIcon,
               onClick: () => {
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                updateTodo(todo.id, {
-                  name: uuidv4(),
-                  todo_list_id,
-                  is_completed,
-                });
+                setIsEditing(true);
               },
             },
           ]}
         />
       </div>
-      <div className="flex-grow">{name}</div>
-      <input
-        className="block w-6 h-6 rounded-md focus:ring-green-700 focus:bg-green-700 checked:focus:bg-green-700 checked:bg-green-500 checked:hover:bg-green-700"
-        type="checkbox"
-        checked={is_completed}
-        onChange={() => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          updateTodo(todo.id, {
-            name,
-            todo_list_id,
-            is_completed: !todo.is_completed,
-          });
-        }}
-      />
+      {!isEditing ? (
+        <>
+          <div className="flex-grow">{name}</div>
+          <input
+            className="block w-6 h-6 rounded-md focus:ring-green-700 focus:bg-green-700 checked:focus:bg-green-700 checked:bg-green-500 checked:hover:bg-green-700"
+            type="checkbox"
+            checked={is_completed}
+            onChange={() => {
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              updateTodo(todo.id, {
+                name,
+                todo_list_id,
+                is_completed: !todo.is_completed,
+              });
+            }}
+          />
+        </>
+      ) : (
+        <TodoInput
+          className="flex-grow"
+          initialValue={name}
+          onSubmit={(newName) => {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            updateTodo(todo.id, {
+              name: newName,
+              todo_list_id,
+              is_completed: !todo.is_completed,
+            });
+            setIsEditing(false);
+          }}
+          onCancel={() => {
+            setIsEditing(false);
+          }}
+        />
+      )}
     </li>
   );
 };
